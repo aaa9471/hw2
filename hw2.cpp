@@ -5,7 +5,7 @@
 #include <utility>
 #include<queue>
 
-int row,col;
+int row,col,battery;
 using namespace std;
 int map [1000][1000] ={};
 
@@ -22,12 +22,13 @@ class Node
     int i,j,lenth;
 };
 
-void BFS(int i,int j){
+int  BFS(int i,int j){
     queue<Node> que;
     que.push(Node(i,j,0));
     while(!que.empty()){
         Node u = que.front(); que.pop();
         int a = u.geti(),b = u.getj(),l = u.getl();
+        if(2*l>battery)return 0;
         //cout<<a<<" "<<b<<" "<<l<<endl;
         map[a][b] = l;
         if (b<col && map[a][b+1]>map[a][b]+1){
@@ -43,11 +44,34 @@ void BFS(int i,int j){
             que.push(Node(a-1,b,l+1));
         }
     }
+    return 1;
 
 }
 
+class Ans
+{
+    public:
+    Ans(int a,int b){i=a,j=b;};
+    ~Ans(){;};
+    int i_get(){return i;};
+    int j_get(){return j;};
+    
+    private:
+    int i,j;
+};
+
+vector<Ans> ans;
+void clean (int i,int j,int bat){
+    if (2*bat<battery){
+        
+    }
+    else {
+
+    }
+}
+
 int main (int argc,char* argv[]){
-    int  ans = 0,battery;
+    int  ans = 0;
     int i_start,j_start;//the start position
     char road;
     ifstream fin;
@@ -77,7 +101,18 @@ int main (int argc,char* argv[]){
             }
         }
     }
-    BFS(i_start,j_start);
+    //road lenth
+    if(!BFS(i_start,j_start)){
+        fin.close();
+        ofstream fout;
+        fout.open(output,ios::out);
+        fout<<"the machine cannot clean the room\n";
+        cout<<"the machine cannot clean the room\n";
+        fout.close();
+        return 0;
+    }
+
+    clean(i_start,j_start,battery);
 
     fin.close();
     ofstream fout;
