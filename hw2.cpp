@@ -52,30 +52,21 @@ int  BFS(int i,int j){
     return 1;
 
 }
-/*
-class Ans
-{
-    public:
-    Ans(int a,int b){i=a,j=b;};
-    ~Ans(){;};
-    int i_get(){return i;};
-    int j_get(){return j;};
-    
-    private:
-    int i,j;
-};
 
+/*
 int vis[1000][1000] ={0};
 pair<int,int> max1(int i,int j){
     int vw = vis[i-1][j],vs = vis[i+1][j],vd = vis[i][j+1], va = vis[i][j-1];
     int mw = map[i-1][j],ms = map[i+1][j],md = map[i][j+1], ma = map[i][j-1];
 
 }
-
-vector<Ans> ans;
+*/
 void clean (int i,int j,int bat){
     if (2*bat<battery){
-        if(j<col-1 && map[i][j+1]>=map[i][j-1]&&map[i][j+1]>=map[i+1][j]&&map[i][j+1]>=map[i-1][j]){
+        if(j<col-1 &&
+        map[i][j+1].getl()>=map[i][j-1].getl()>=map[i-1][j].getl()>=map[i+1][j].getl()&&
+        map[i][j+1].gett()<=map[i][j-1].gett()<=map[i-1][j].gett()<=map[i+1][j].gett())
+        {
             clean(i,j+1,bat-1);
         }        
         else if (i>0 && map[i-1][j]>map[i][j+1]&&map[i-1][j]>=map[i][j-1]&&map[i-1][j]>=map[i+1][j]&&){
