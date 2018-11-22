@@ -28,18 +28,19 @@ void BFS(int i,int j){
     while(!que.empty()){
         Node u = que.front(); que.pop();
         int a = u.geti(),b = u.getj(),l = u.getl();
+        //cout<<a<<" "<<b<<" "<<l<<endl;
         map[a][b] = l;
-        if (map[a][b+1]>map[a][b]+1){
+        if (b<col && map[a][b+1]>map[a][b]+1){
             que.push(Node(a,b+1,l+1));
         }
-        if (map[a][b-1]>map[a][b]+1){
+        if (b>0 && map[a][b-1]>map[a][b]+1){
             que.push(Node(a,b-1,l+1));
         }
-        if (map[a+1][b]>map[a][b]+1){
+        if (a<row && map[a+1][b]>map[a][b]+1){
             que.push(Node(a+1,b,l+1));
         }
-        if (map[a-1][b]>map[a][b]+1){
-            que.push(Node(a+1,b,l+1));
+        if (a>0 && map[a-1][b]>map[a][b]+1){
+            que.push(Node(a-1,b,l+1));
         }
     }
 
@@ -56,7 +57,7 @@ int main (int argc,char* argv[]){
     string output = argv[1]+str2;
     //if file open fail
     fin.open(input, ios::in);
-        if (!fin){
+    if (!fin){
         cout<<"in error"<<endl;
         return 0;
     }
@@ -77,10 +78,20 @@ int main (int argc,char* argv[]){
         }
     }
     BFS(i_start,j_start);
+
+    fin.close();
+    ofstream fout;
+    fout.open(output,ios::out);
+    if(!fout){
+        cout<<"out error\n";
+        return 0;
+    }
     for(int i=0;i<row;i++){
         for(int j=0;j<col;j++){
-            cout<<map[i][j]<<" \n"[i==col-1];
+            fout<<map[i][j]<<" \n"[j==col-1];
         }
     }
+    fout.close();
+    return 0;
 
 }
