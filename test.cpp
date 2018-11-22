@@ -2,20 +2,13 @@
 
 using namespace std;
 
-int row,col;
-int m[row][col];
+int m[1000][1000] = {0};
+
 
 int main (){
-    cin>>row>>col;
-    for(int i=0;i<row;i++){
-        for(int j=0;j<col;j++){
-            m[i][j] = i+j;
+    for(int i = 0;i<1000;i++){
+        for(int j=0;j<1000;j++){
+            cout<<m[i][j];
         }
-    }
-    for(int i=0;i<row;i++){
-        for(int j=0;j<col;j++){
-            cout<<m[i][j]<<" ";
-        }
-        cout<<endl;
     }
 }
