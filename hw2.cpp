@@ -8,14 +8,39 @@
 int row,col;
 using namespace std;
 int map [1000][1000] ={};
+
+class Node
+{
+    public:
+    Node(int x,int y,int z){i=x,j=y,lenth = z;};
+    ~Node(){;};
+    int geti(){return i;};
+    int getj(){return j;};
+    int getl(){return lenth;};
+
+    private:
+    int i,j,lenth;
+};
+
 void BFS(int i,int j){
-    queue<pair<int,int>> que;
-    bool vis[row][col] = {0};
-    que.push(make_pair(i,j));
-    vis[i][j] = true;
+    queue<Node> que;
+    que.push(Node(i,j,0));
     while(!que.empty()){
-        int u = que.front(); que.pop();
-        for()
+        Node u = que.front(); que.pop();
+        int a = u.geti(),b = u.getj(),l = u.getl();
+        map[a][b] = l;
+        if (map[a][b+1]>map[a][b]+1){
+            que.push(Node(a,b+1,l+1));
+        }
+        if (map[a][b-1]>map[a][b]+1){
+            que.push(Node(a,b-1,l+1));
+        }
+        if (map[a+1][b]>map[a][b]+1){
+            que.push(Node(a+1,b,l+1));
+        }
+        if (map[a-1][b]>map[a][b]+1){
+            que.push(Node(a+1,b,l+1));
+        }
     }
 
 }
@@ -52,6 +77,10 @@ int main (int argc,char* argv[]){
         }
     }
     BFS(i_start,j_start);
-
+    for(int i=0;i<row;i++){
+        for(int j=0;j<col;j++){
+            cout<<map[i][j]<<" \n"[i==col-1];
+        }
+    }
 
 }
