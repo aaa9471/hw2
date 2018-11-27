@@ -31,27 +31,34 @@ class Node
 };
 
 //array<array<Node,1000>,1000> map ;
-Node map[1000][1000];
+Node map[1010][1010];
+bool vis[1001][1010];
 
 int  BFS(int i,int j){
+    int x=0;
     queue<Node> que;
     que.push(Node(i,j,0));
     while(!que.empty()){
         Node u = que.front(); que.pop();
         int a = u.geti(),b = u.getj(),l = u.getl();
+        vis[a][b] = true;
         if(2*l>battery)return 0;
         //cout<<a<<" "<<b<<" "<<l<<endl;
-        map[a][b].len(l);
-        if (b<col-1 && map[a][b+1].getl()>map[a][b].getl()+1){
+        if(map[a][b].getl()>l)map[a][b].len(l);
+        if (b<col-1 && !vis[a][b+1] && map[a][b+1].getl()>map[a][b].getl()+1){
+            vis[a][b+1] = true;
             que.push(Node(a,b+1,l+1));
         }
-        if (b>0 && map[a][b-1].getl()>map[a][b].getl()+1){
+        if (b>0 && !vis[a][b-1] && map[a][b-1].getl()>map[a][b].getl()+1){
+            vis[a-1][b] = true;
             que.push(Node(a,b-1,l+1));
         }
-        if (a<row-1 && map[a+1][b].getl()>map[a][b].getl()+1){
+        if (a<row-1 && !vis[a+1][b] && map[a+1][b].getl()>map[a][b].getl()+1){
+            vis[a+1][b] = true;
             que.push(Node(a+1,b,l+1));
         }
-        if (a>0 && map[a-1][b].getl()>map[a][b].getl()+1){
+        if (a>0 && !vis[a-1][b] && map[a-1][b].getl()>map[a][b].getl()+1){
+            vis[a-1][b] = true;
             que.push(Node(a-1,b,l+1));
         }
     }
@@ -60,10 +67,10 @@ int  BFS(int i,int j){
 }
 int up,down,rt,lt;
 int mint(int i, int j,int bat){
-    int w = (map[i-1][j].getl()>bat||i<=0)?infty:map[i-1][j].gett();
-    int a = (map[i][j-1].getl()>bat||j<=0)?infty:map[i][j-1].gett();
-    int s = (map[i+1][j].getl()>bat||i>=row-1)?infty:map[i+1][j].gett();
-    int d = (j>=col-1||map[i][j+1].getl()>bat)?infty:map[i][j+1].gett();
+    int w = (i<=0||map[i-1][j].getl()>=bat)?infty:map[i-1][j].gett();
+    int a = (j<=0||map[i][j-1].getl()>=bat)?infty:map[i][j-1].gett();
+    int s = (i>=row-1||map[i+1][j].getl()>=bat)?infty:map[i+1][j].gett();
+    int d = (j>=col-1||map[i][j+1].getl()>=bat)?infty:map[i][j+1].gett();
     int m = (w<s)?w:s;
     int n = a<d?a:d;
     //cout<<j<<" "<<col<<endl;
@@ -78,7 +85,7 @@ int maxl(int i,int j,int bat){
     a = (a<bat)?a:0;
     s = (s<bat)?s:0;
     d = (d<bat)?d:0;
-
+    //up = w,down = s, rt = d, lt = a;
     int m = (w>s)?w:s, n = (a>d)?a:d;
     return m>n?m:n;
 }
@@ -86,7 +93,7 @@ int x=0;
 void clean (int i,int j,int bat,int dir){
     Node *w = &map[i-1][j],*a = &map[i][j-1], *s = &map[i+1][j], *d = &map[i][j+1];
     //cout<<map[13][8].gett()<<endl;
-    cout<<i<<","<<j<<","<<bat<<clear<<endl;
+    //cout<<i<<","<<j<<","<<bat<<clear<<endl;
     /*
     if(i == 11 && j == 7){
         cout<<mint(i,j,bat)<<" "<<maxl(i,j,bat)<<endl;
@@ -207,6 +214,134 @@ void clean (int i,int j,int bat,int dir){
 
 }
 
+void Clean(int i,int j){
+    int clear = 0;
+    int dir = 0,bat = battery;
+    int err = 0,alclear = 0;
+    while (clear <dirty||bat>0){
+        //cout<<ans.size()<<endl;
+        
+        //printf("%d %d %d\n",clear,dirty,bat);
+        Node *w = &map[i-1][j],*a = &map[i][j-1], *s = &map[i+1][j], *d = &map[i][j+1];
+        if (j<col &&bat>d->getl()&& d->gett() == mint(i,j,bat) && d->getl() == maxl(i,j,bat)){
+            ans.push_back(make_pair(i,j+1));
+            if(d->gett() == 0)clear+=1;
+            d->plustime();
+            i =i;
+            j++;
+            bat--;
+            dir = 6;
+        }
+        else if (i>0&&bat>w->getl()&&w->gett()==mint(i,j,bat) && w->getl() == maxl(i,j,bat)){
+            ans.push_back(make_pair(i-1,j));
+            if(!w->gett())clear+=1;
+            w->plustime();
+            i--;
+            bat--;
+            dir = 8;
+        }
+        else if (j>0&&bat>a->getl()&&a->gett()==mint(i,j,bat)&& a->getl() == maxl(i,j,bat)){
+            ans.push_back(make_pair(i,j-1));
+            if(!a->gett())clear+=1;
+            a->plustime();
+            j--;
+            bat--;
+            dir = 4;
+        }
+        else if (i<row&&bat>s->getl()&&s->gett() == mint(i,j,bat)&&s->getl()<=maxl(i,j,bat)){
+            ans.push_back(make_pair(i+1,j));
+            if(!s->gett())clear+=1;
+            s->plustime();
+            //cout<<s.geti()<<" "<<s.getj()<<" "<<s.gett()<<map[4][6].getl()<<endl;
+            i++;
+            bat--;
+            dir = 2;
+        }
+        else if (i == i_start&& j == j_start){
+            if(clear>alclear)alclear = clear;
+            else err++;
+            if(err == 20)break;
+            switch(dir){
+                case 6:
+                    ans.push_back(make_pair(i,j-1));
+                    if(!a->gett())clear+=1;
+                    a->plustime();
+                    j--;
+                    bat = battery-1;
+                    dir =4;
+                    break;
+                case 8:
+                    ans.push_back(make_pair(i+1,j));
+                    if(!s->gett())clear+=1;
+                    s->plustime();
+                    i++;
+                    bat = battery -1;
+                    dir = 2;
+                    break;
+                case 4:
+                    ans.push_back(make_pair(i,j+1));
+                    if(!d->gett())clear+=1;
+                    d->plustime();
+                    j++;
+                    bat = battery-1;
+                    dir = 6;
+                    break;
+                case 2:
+                    ans.push_back(make_pair(i-1,j));
+                    if(!w->gett())clear+=1;
+                    w->plustime();
+                    i--;
+                    bat = battery -1;
+                    dir = 8;
+                    break;
+                default:
+                    return;
+            }
+
+        }
+        else if (j>0&&bat>a->getl()&&a->gett()==mint(i,j,bat)&& a->getl() <= maxl(i,j,bat)){
+            ans.push_back(make_pair(i,j-1));
+            if(!a->gett())clear+=1;
+            a->plustime();
+            j--;
+            bat--;
+            dir = 4;
+        }    
+        else if (i>0&&bat>w->getl()&&w->gett()==mint(i,j,bat) && w->getl() <= maxl(i,j,bat)){
+            ans.push_back(make_pair(i-1,j));
+            if(!w->gett())clear+=1;
+            w->plustime();
+            i--;
+            bat--;
+            dir = 8;
+        }
+        else if (j<col &&bat>d->getl()&& d->gett() == mint(i,j,bat) && d->getl() <= maxl(i,j,bat)){
+            //cout<<i<<" "<<j<<" "<<d.gett()<<" "<<mint(i,j)<<endl;
+            ans.push_back(make_pair(i,j+1));
+            if(!d->gett())clear+=1;
+            d->plustime();
+            //cout<<d.gett();
+            j++;
+            bat --;
+            dir = 6;
+        }
+        else {
+            cout<<mint(i,j,bat)<<" "<<maxl(i,j,bat)<<endl;
+            cout<<w->getl()<<" "<<w->gett()<<endl;
+            cout<<a->getl()<<" "<<a->gett()<<endl;
+            cout<<s->getl()<<" "<<s->gett()<<endl;
+            cout<<d->getl()<<" "<<d->gett()<<endl; 
+            cout<<map[i_start][j_start].gett()<<endl;
+            printf("%d %d %d %d\n",up,lt,down,rt);
+            cout<<"r"<<endl;
+            cout<<bat<<endl;
+            cout<<clear<<"/"<<dirty<<endl;
+            return;
+        }
+    }
+
+}
+
 int main (int argc,char* argv[]){
     char road;
     ifstream fin;
@@ -239,9 +374,13 @@ int main (int argc,char* argv[]){
                 i_start = i;
                 j_start = j;
             }
+            if(road == '1') vis[i][j] = true;
+            else if (road == '0')vis[i][j] = false;
+            else if (road == 'R')vis[i][j] = false;
         }
     }
     //road lenth
+    
     if(!BFS(i_start,j_start)){
         fin.close();
         ofstream fout;
@@ -251,7 +390,8 @@ int main (int argc,char* argv[]){
         fout.close();
         return 0;
     }
-    clean(i_start,j_start,battery,0);
+    //clean(i_start,j_start,battery,0);
+    Clean(i_start,j_start);
     cout<<clear<<"/"<<dirty<<endl;
     fin.close();
     ofstream fout;
